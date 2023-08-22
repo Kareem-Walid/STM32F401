@@ -3,10 +3,10 @@
 #define NVIC_INTERFACE_H_
 
 
-#include "Bit_Math.h"
+#include "../COMM/Bit_Math.h"
 #include "NVIC_Private.h"
 #include "NVIC_Config.h"
-#include "SCB_Interface.h"
+#include "../SCB_Driver/SCB_Interface.h"
 
 
 typedef enum{
@@ -21,16 +21,16 @@ typedef enum{
 	PendSV = -2,
 	Systick = -1,
 	WWDG = 0,
-	EXTI16_PVD,
-	EXTI21_TAMP_STAMP,
-	EXTI22_RTC_WKUP,
+// 	EXTI16_PVD,
+//	EXTI21_TAMP_STAMP,
+//	EXTI22_RTC_WKUP,
 	FLASH,
 	RCC,
-	EXTI0,
+	/*EXTI0,
 	EXTI1,
 	EXTI2,
 	EXTI3,
-	EXTI4,
+	EXTI4, */
 	DMA1_Stream0,
 	DMA1_Stream1,
 	DMA1_Stream2,
@@ -45,6 +45,6 @@ void  NVIC_DisableIRQ(IRQn_Type   IRQn);
 void  NVIC_SetPendingIRQ(IRQn_Type   IRQn);
 void  NVIC_ClearPendingIRQ(IRQn_Type   IRQn);
 uint32_t NVIC_GetActive(IRQn_Type   IRQn);
-void NVIC_GetPrority(IRQn_Type IRQn,uint32_t Priority);
+void NVIC_SetPrority(IRQn_Type IRQn,uint32_t Priority);
 
 #endif

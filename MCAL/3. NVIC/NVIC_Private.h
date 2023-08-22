@@ -8,7 +8,7 @@
 #define NVIC_PRIVATE_H_
 
 
-#include "Platform_Types.h"
+#include "../COMM/Platform_Types.h"
 
 // Macro declaration start
 #define   NVIC_BASE_ADDRESS   (0xE000E100UL)

@@ -40,9 +40,10 @@ uint32_t NVIC_GetActive(IRQn_Type IRQn)
       {
 	    return GET_BIT(NVIC->IABR[((uint32_t)IRQn)/32] , (((uint32_t)IRQn) % 32));
       }
+       return 0;
 }
 
-void NVIC_GetPrority(IRQn_Type IRQn,uint32_t Priority)
+void NVIC_SetPrority(IRQn_Type IRQn,uint32_t Priority)
 {
 	if((uint32_t)IRQn >=0)
 	{
@@ -51,30 +52,8 @@ void NVIC_GetPrority(IRQn_Type IRQn,uint32_t Priority)
        /* Nothing */
 	}
 }
-/*
-void NVIC_vgroub_subgroub(uint8_t copy_prority)
-{
 
-	uint32_t  local_temp = (Pass<<16) |(uint8_t copy_prority << 8);
-	SCB_AIRCRX &= ~ (0b111<8) ;
-	// photo
 
- */
-// }
 
-/*
 
-void NVIC_vsetinterruptrority(uint8_t copy_interpunumber, groupid, subgroub)
-{
-	switch(staticG_proirtyconfg)
-	{
-	case NVIC_GROUB4BITS_SUB0BITS:
-		NVIC->IPR[copy_interpunumber] = groupid<<4 ;
-		break;
-		.
-		.
-		.
-	}
 
-}
- */

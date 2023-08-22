@@ -8,7 +8,7 @@
 #ifndef SCB_INTERFACE_H_
 #define SCB_INTERFACE_H_
 
-#include "Platform_Types.h"
+#include "../COMM/Platform_Types.h"
 #include "SCB_Config.h"
 
 
