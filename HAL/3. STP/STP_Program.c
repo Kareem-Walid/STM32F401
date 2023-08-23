@@ -7,71 +7,80 @@
 
 
 #include "STP_Interface.h"
-
-SPinConfig_t P0,P1,P2,P3;
+static SPinConfig_t pShClk,pSData,pLTClk;
 
 void MSTP_vInit(void)
 {
     /* Enable RCC */
 	RCC_vInitSysClk();
-	RCC_vEnablePeripheral(AHB1,GPIOAEN);
+	RCC_vEnablePeripheral(AHB1,PORT_EN);
 
 	/* Enable GPIO */
-	P0.Pin = MSTP_SDATA_PIN;
-	P0.Port = STP_PORT;
-	P0.PinMode = OUTPUT_M;
-	GPIO_PinConfig(&P0);
+	pShClk.Pin = MSTP_SHIFT_CLK_PIN;
+	pShClk.Port = STP_PORT ;
+	pShClk.PinMode = OUTPUT_M;
+	GPIO_PinConfig(&pShClk);
 
-	P1.Pin = MSTP_SHIFT_CLK_PIN;
-	P1.Port = STP_PORT;
-	P1.PinMode = OUTPUT_M;
-	GPIO_PinConfig(&P1);
+	pSData.Pin =  MSTP_SDATA_PIN ;
+	pSData.Port = STP_PORT;
+	pSData.PinMode = OUTPUT_M;
+	GPIO_PinConfig(&pSData);
 
-	P2.Pin = MSTP_LATCH_CLK_PIN;
-	P2.Port = STP_PORT;
-	P2.PinMode = OUTPUT_M;
-	GPIO_PinConfig(&P2);
+	pLTClk.Pin = MSTP_LATCH_CLK_PIN;
+	pLTClk.Port = STP_PORT;
+	pLTClk.PinMode = OUTPUT_M;
+	GPIO_PinConfig(&pLTClk);
 
-	P3.Pin = MSTP_OUTEN_PIN;
-	P3.Port = STP_PORT;
-	P3.PinMode = OUTPUT_M;
-	P3.Level = PIN_HIGH;
-	GPIO_PinConfig(&P3);
+	/* This Pint for Enable Output --- You can connect it by ground all time
+	 * P3.Pin = MSTP_OUTEN_PIN;
+	 * P3.Port = STP_PORT;
+	 * P3.PinMode = OUTPUT_M;
+	 * P3.Level = PIN_HIGH;
+	 * GPIO_PinConfig(&P3);
+     */
 
     /* Init SysTick */
 	STK_vInit();
 
 }
 
-static void Send_Pulse(uint32_t Pulse_Width)
+static void Send_Pulse(void)
 {
-	P0.Level = PIN_HIGH;
-	GPIO_PinConfig(&P0);
+	pShClk.Level = PIN_HIGH;
+	GPIO_PinConfig(&pShClk);
 	STK_vDelay_(Pulse_Width);   // Pluse Width
-	P0.Level = PIN_LOW;
-	GPIO_PinConfig(&P0);
+	pShClk.Level = PIN_LOW;
+	GPIO_PinConfig(&pShClk);
 }
+
+
 void MSTP_vDisplayData(uint8_t  Data)
 {
 	uint8_t i;
-	for(i=0;i<8;i++)
+
+	/* Send LOW on Latch Clock*/
+	pLTClk.Level = PIN_LOW;
+	GPIO_PinConfig(&pLTClk);
+
+	for(i=0;i<=7;i++)
 	{
 		/* Send Data on Data Series Pin*/
-		P1.Level = GET_BIT(Data,i);
-		GPIO_PinConfig(&P1);
+		pSData.Level = GET_BIT(Data,i);
+		GPIO_PinConfig(&pSData);
 
-		/*Send Pules*/
-		Send_Pulse(8);
+		/*Send Pules on Shift Clock*/
+		Send_Pulse();
 	}
 
-	/*Send High on Latch Clock*/
-	P2.Level = PIN_HIGH;
-	GPIO_PinConfig(&P2);
+	/* Send High on Latch Clock*/
+	pLTClk.Level = PIN_HIGH;
+	GPIO_PinConfig(&pLTClk);
 
-	/*Send Low to OutPut Enable */
-	P3.Level = PIN_LOW;
-	GPIO_PinConfig(&P3);
 
+	/* Send Low to OutPut Enable (This Pin Optional)
+	 * P3.Level = PIN_LOW;
+	 * GPIO_PinConfig(&P3);
+     */
 
 }
 

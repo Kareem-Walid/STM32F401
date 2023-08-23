@@ -8,13 +8,15 @@
 #ifndef STP_DRIVER_STP_CONFIG_H_
 #define STP_DRIVER_STP_CONFIG_H_
 
+#define   STP_PORT   GPIO_PA
+#define   PORT_EN    GPIOAEN
 
 
-#define   STP_PORT      GPIO_PA
-
-#define  MSTP_SDATA_PIN                PIN0
-#define  MSTP_OUTEN_PIN                PIN3
-#define  MSTP_SHIFT_CLK_PIN	           PIN1
+#define  MSTP_SHIFT_CLK_PIN	           PIN0
+#define  MSTP_SDATA_PIN                PIN1
 #define  MSTP_LATCH_CLK_PIN	           PIN2
+
+
+#define Pulse_Width  5
 
 #endif /* STP_DRIVER_STP_CONFIG_H_ */
