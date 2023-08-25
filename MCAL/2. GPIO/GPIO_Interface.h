@@ -1,8 +1,9 @@
 #ifndef    GPIO_INTERFACE_H_
 #define    GPIO_INTERFACE_H_
 
+// #include "Bit_Math.h"
 #include "GPIO_Private.h"
-#include "../COMM/Bit_Math.h"
+
 
 typedef enum{
 	GPIO_PA,
@@ -13,6 +14,7 @@ typedef enum{
 	GPIO_PH
 
 }GPIO_PORTs_t;
+
 typedef enum{
 	PIN_LOW,
 	PIN_HIGH
@@ -66,20 +68,38 @@ typedef enum {
     Pull_up,
     Pull_down,
     Reserved
-}PinPullUpDown_t;
+}PinInputType_t;
 
 
-
+typedef enum{
+	AF00,
+	AF01,
+	AF02,
+	AF03,
+	AF04,
+	AF05,
+	AF06,
+	AF07,
+	AF08,
+	AF09,
+	AF10,
+	AF11,
+	AF12,
+	AF13,
+	AF14,
+	AF15
+}Alternative_Types_t;
 
 typedef  struct
 {
 	PINs_t  Pin;
 	GPIO_PORTs_t Port;
+	PinMode_t  PinMode;
 	PinLevel_t  Level;
-	PinMode_t   PinMode;
 	PinOutType_t PinOutType;
 	PinOutSpeed_t  PinOutSpeed;
-	PinPullUpDown_t PinPullUpDown;
+	PinInputType_t PinInputType;
+	Alternative_Types_t ALT_FUN;
 	
 }SPinConfig_t;
 
