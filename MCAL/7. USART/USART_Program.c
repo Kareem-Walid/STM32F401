@@ -17,6 +17,7 @@
  *********************************************************************************************************************/
 #include "USART_Interface.h"
 
+#include  "../SysTick_Driver/SysTick_Interface.h"
 
 
 
@@ -73,7 +74,7 @@ void MUSART_vInit(void)
 	Pin10_Rx.PinMode = ALTERNATIVE_M;   /* Set Pin As Alternative Function */
 	Pin10_Rx.ALT_FUN = AF07;
 	Pin10_Rx.PinOutType = PUSH_PULL;    /* This from Data Sheet*/
-	GPIO_PinConfig(&Pin10_Rx);          /* Send Structure to Function */
+	GPIO_PinConfig(&Pin10_Rx);          /* Send Structure to the Function in GPIO Driver */
 
 	/* --- END OF GPIOA Configuration ---  */
 
@@ -105,11 +106,11 @@ void MUSART_vInit(void)
 
 	/* Round the Fraction Number to the Nearest Number */
 	/* Check First if the number also */
-	if(LoDIV_Fraction != 0.00 &&LoDIV_Fraction - (uint32_t)LoDIV_Fraction >= 0.5)
+	if(LoDIV_Fraction != 0.00 && (LoDIV_Fraction - (uint32_t)LoDIV_Fraction >= 0.5))
 	{
 		LoDIV_Fraction = (uint32_t)LoDIV_Fraction ;
 		LoDIV_Fraction ++;
-	}else if (LoDIV_Fraction != 0.00 && LoDIV_Fraction - (uint32_t)LoDIV_Fraction < 0.5){
+	}else if (LoDIV_Fraction != 0.00 && (LoDIV_Fraction - (uint32_t)LoDIV_Fraction < 0.5)){
 		LoDIV_Fraction = (uint32_t)LoDIV_Fraction ;
 		LoDIV_Fraction --;
 	}
@@ -131,8 +132,12 @@ void MUSART_vInit(void)
 #elif USART_DATA_LENGTH == DATA_SIZE_9
 	SET_BIT( USART1 -> USART_CR1,M);
 #endif
+
 	/* ***** Last Step Enable USART ****** */
 	SET_BIT( USART1 -> USART_CR1,UE);
+	SET_BIT( USART1 -> USART_CR1,TE); // last changes
+	SET_BIT( USART1 -> USART_CR1,RE);  // last changes
+
 	/* --- END OF USART Configuration ---  */
 }
 
@@ -170,6 +175,7 @@ void MUSART_vSendData(uint8_t* DataTrans,uint8_t Copy_lenght)
 
 	/* Increase Counter to Next Element of Array */
 	Local_Counter ++;
+    STK_vDelay_(8000000);
 
 	}
 
