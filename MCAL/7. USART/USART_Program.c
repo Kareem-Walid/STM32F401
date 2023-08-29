@@ -158,20 +158,20 @@ void MUSART_vInit(void)
  *
  *******************************************************************************/
 
-void MUSART_vSendData(uint8_t* DataTrans,uint8_t Copy_lenght)
+void MUSART_vSendData(uint8_t* DataTrans)
 {
 	uint8_t  Local_Counter = 0;
 
 	/* We will Send Data through  USART_DR Register */
     /* Looping on Every Element of Array */
-	while(Local_Counter < Copy_lenght)
+	while(Local_Counter != '/0')
 	{
 
 	/* Load Data from Array Index to USART_DR Register */
 	USART1 -> USART_DR = DataTrans[Local_Counter];
 
 	/* Wait Until Data Transmitted */
-	while(GET_BIT(USART1 -> USART_DR,TXE) == 0 );
+	while(GET_BIT(USART1 -> USART_SR,TXE) == 0 );
 
 	/* Increase Counter to Next Element of Array */
 	Local_Counter ++;
