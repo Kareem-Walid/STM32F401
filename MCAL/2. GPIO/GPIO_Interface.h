@@ -1,7 +1,8 @@
 #ifndef    GPIO_INTERFACE_H_
 #define    GPIO_INTERFACE_H_
 
-// #include "Bit_Math.h"
+#include "../COMM/Bit_Math.h"
+#include "../COMM/Platform_Types.h"
 #include "GPIO_Private.h"
 
 

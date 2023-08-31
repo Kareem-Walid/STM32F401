@@ -1,10 +1,10 @@
 #ifndef    GPIO_PRIVATE_H_
 #define    GPIO_PRIVATE_H_
 
-// #include "Platform_Types.h"
-// #include "Bit_Math.h"
 
-typedef unsigned long          uint32_t;
+
+
+
 
 
 #define     GPIOA_BASE_ADDRESS    0x40020000UL    
@@ -17,11 +17,11 @@ typedef unsigned long          uint32_t;
 
 
 #define  GPIOA    ((GPIO_REGs_t*)GPIOA_BASE_ADDRESS)
-#define  GPIOB    ((GPIO_REGs_t*)GPIOA_BASE_ADDRESS)
-#define  GPIOC    ((GPIO_REGs_t*)GPIOA_BASE_ADDRESS)
-#define  GPIOD    ((GPIO_REGs_t*)GPIOA_BASE_ADDRESS)
-#define  GPIOE    ((GPIO_REGs_t*)GPIOA_BASE_ADDRESS)
-#define  GPIOH    ((GPIO_REGs_t*)GPIOA_BASE_ADDRESS)
+#define  GPIOB    ((GPIO_REGs_t*)GPIOB_BASE_ADDRESS)
+#define  GPIOC    ((GPIO_REGs_t*)GPIOC_BASE_ADDRESS)
+#define  GPIOD    ((GPIO_REGs_t*)GPIOD_BASE_ADDRESS)
+#define  GPIOE    ((GPIO_REGs_t*)GPIOE_BASE_ADDRESS)
+#define  GPIOH    ((GPIO_REGs_t*)GPIOH_BASE_ADDRESS)
 
 
 
