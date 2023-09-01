@@ -29,7 +29,7 @@
 
 
 /* ===============================================================================
-              ##### Initialization and de-initialization functions #####
+              ##### Initialization and De-initialization functions #####
    =============================================================================== */
 
 /******************************************************************************
@@ -43,14 +43,19 @@
  * \Return value:   : Std_ReturnType  E_OK
  *                                    E_NOT_OK
  *******************************************************************************/
-void MGPIO_vPinInit(GPIO_PORTs_t Port ,GPIO_PINs_t Pin ,SPinConfig_t *pSPinConfig)
+void MGPIO_vPinInit(GPIO_PINs_t Pin , GPIO_PORTs_t Port , SPinConfig_t *pSPinConfig)
 {
 
+	/* Initialize  RCC Clock */
+
+	RCC_vInitSysClk();
 	/*Switch on Ports GPIOA , GPIOB , GPIOC , GPIOD , GPIOE or GPIOH */
 	switch(Port)
 	{
 	case GPIOA:
-
+		/* Before Load Any Data We must to Enable Clock For Port  */
+		/* Enable Clock For Port A that be connected on AHB1 Bus */
+		RCC_vEnablePeripheral(AHB1,GPIOAEN);
 		/* -------------- SET MODE ------------------- */
 		/* MODE Options:
 		 * 00: Input (reset state)
@@ -60,16 +65,21 @@ void MGPIO_vPinInit(GPIO_PORTs_t Port ,GPIO_PINs_t Pin ,SPinConfig_t *pSPinConfi
 		 */
 
 		/* CLEAR TWO PINS SPECIFIC  */
-		CLR_TWO_BIT(pGPIOA -> GPIO_MODER,Pin);
+		pGPIOA -> GPIO_MODER   &=~ (0b11<<(Pin*2));
 		/* SET TWO PINS SPECIFIC WITH MODE */
-		SET_TWO_BIT(pGPIOA -> GPIO_MODER,Pin,pSPinConfig->PinMode);
+		pGPIOA -> GPIO_MODER   |=  (((pSPinConfig->PinMode)<<(Pin*2)));
 		/* ----------------------------------------------------- */
 		/* -------------- SET PIN OUTPUT TYPE ------------------- */
 		/* OUTPUT TYPE Options:
 		 * 0: Output push-pull (reset state)
 		 * 1: Output open-drain
 		 */
-
+		/* CLEAR TWO PINS SPECIFIC  */
+		CLR_BIT(pGPIOA -> GPIO_OTYPER,Pin);
+		if(pSPinConfig ->PinOutType == OPEN_DRAIN)
+		{
+			set_BIT(pGPIOA -> GPIO_OTYPER,Pin);
+		}
 
 		/* ----------------------------------------------------- */
 		/* -------------- SET OUTPUT SPEED --------------------- */
@@ -81,9 +91,9 @@ void MGPIO_vPinInit(GPIO_PORTs_t Port ,GPIO_PINs_t Pin ,SPinConfig_t *pSPinConfi
 		 */
 
 		/* CLEAR TWO PINS SPECIFIC  */
-		CLR_TWO_BIT(pGPIOA -> GPIO_OSPEEDER,Pin);
+		pGPIOA -> GPIO_OSPEEDER  &=~ (0b11<<((Pin)*2));
 		/* SET TWO PINS SPECIFIC WITH SPEED */
-		SET_TWO_BIT(pGPIOA -> GPIO_OSPEEDER,Pin,pSPinConfig->PinOutSpeed);
+		pGPIOA -> GPIO_OSPEEDER  |=  (((pSPinConfig->PinOutSpeed)<<(Pin)*2));
 		/* ----------------------------------------------------- */
 		/* -------------- SET PIN INPUT TYPE ------------------- */
 		/* INPUT TYPE Options:
@@ -93,30 +103,37 @@ void MGPIO_vPinInit(GPIO_PORTs_t Port ,GPIO_PINs_t Pin ,SPinConfig_t *pSPinConfi
 		 * 11: Reserved
 		 */
 		/* CLEAR TWO PINS SPECIFIC  */
-		CLR_TWO_BIT(pGPIOA -> GPIO_PUPDR,Pin);
+		pGPIOA -> GPIO_PUPDR  &=~ (0b11<<((Pin)*2));
 		/* SET TWO PINS SPECIFIC WITH SPEED */
-		SET_TWO_BIT(pGPIOA -> GPIO_PUPDR,Pin,pSPinConfig->PinInputType);
-		/* ----------------------------------------------------- */
+		pGPIOA -> GPIO_PUPDR  |=  (((pSPinConfig->PinInputType)<<(Pin)*2));
+
+		/* ------------------------------------------------------ */
+		/*-----------  Alternative Function Section ------------- */
+
+
+		/* Check on The Pin to  choosing register High or Low*/
+		/* If The Function Between Pin0 and Pin7 */
+		if(Pin >= PIN0 && Pin <= PIN7)
+		{
+			/* -- Save Value of AF in GPIOA_AFRL -- */
+			/* Restore bits wanted to 0000 with kepting other bits without any changes */
+			pGPIOA -> GPIO_AFRL   &=~ (0b1111<<((Pin)*4));
+            /* Store 4 bits in The Reg AFRL */
+		    pGPIOA -> GPIO_AFRL   |=  (((pSPinConfig -> ALT_FUN)<<(Pin)*4));
+
+                  /* If The Function Between Pin8 and Pin15 */
+		}else if (Pin >= PIN7 && Pin <= PIN15)
+		{
+			/* -- Save Value of AF in GPIOA_AFRL -- */
+			/* Restore bits wanted to 0000 with kepting other bits without any changes */
+			pGPIOA -> GPIO_AFRH   &=~ (0b1111<<((Pin % 8)*4));
+            /* Store 4 bits in The Register AFRH */
+		    pGPIOA -> GPIO_AFRH   |=  (((pSPinConfig -> ALT_FUN)<<(Pin % 8)*4));
+		}
 		break;
+		
 
 
-
-	case GPIOB:
-
-		break;
-
-	case GPIOC:
-
-		break;
-
-	case GPIOD:
-		break;
-
-	case GPIOE:
-		break;
-
-	case GPIOH:
-		break;
 	}
 
 }
@@ -132,7 +149,7 @@ void MGPIO_vPinInit(GPIO_PORTs_t Port ,GPIO_PINs_t Pin ,SPinConfig_t *pSPinConfi
  * \Return value:   : Std_ReturnType  E_OK
  *                                    E_NOT_OK
  *******************************************************************************/
-void MGPIO_vPinDeInit(GPIO_PORTs_t Port , SPinConfig_t *SPinConfigPoin)
+void MGPIO_vPinDeInit(GPIO_PORTs_t Port ,GPIO_PINs_t Pin, SPinConfig_t *SPinConfigPoin)
 {
 
 }
@@ -152,9 +169,106 @@ void MGPIO_vPinDeInit(GPIO_PORTs_t Port , SPinConfig_t *SPinConfigPoin)
  * \Return value:   : Std_ReturnType  E_OK
  *                                    E_NOT_OK
  *******************************************************************************/
-void MGPIO_vWritePin(GPIO_PORTs_t Port ,GPIO_PINs_t Pin,GPIO_PIN_STATUS_t Level)
+void MGPIO_vWritePin(GPIO_PINs_t Pin,GPIO_PORTs_t Port,GPIO_PIN_STATUS_t Level)
 {
+	/* Switch on Ports GPIOA , GPIOB , GPIOC , GPIOD , GPIOE or GPIOH */
+	switch(Port)
+	{
+	/* ------------------------- */
+	/* ----- PORTA ------------ */
+	case GPIOA:
+		if(Level == PIN_HIGH){SET_BIT(pGPIOA->GPIO_ODR,Pin);}
+		else{CLR_BIT(pGPIOA->GPIO_ODR,Pin);}
+		break;
 
+		/* ------------------------- */
+		/* ----- PORTB ------------ */
+	case GPIOB:
+		if(Level == PIN_HIGH){SET_BIT(pGPIOB->GPIO_ODR,Pin);}
+		else{CLR_BIT(pGPIOB->GPIO_ODR,Pin);}
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTC ------------ */
+	case GPIOC:
+		if(Level == PIN_HIGH){SET_BIT(pGPIOC->GPIO_ODR,Pin);}
+		else{CLR_BIT(pGPIOC->GPIO_ODR,Pin);}
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTD ------------ */
+	case GPIOD:
+		if(Level == PIN_HIGH){ SET_BIT(pGPIOD->GPIO_ODR,Pin);}
+		else{CLR_BIT(pGPIOD->GPIO_ODR,Pin);}
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTE ------------ */
+	case GPIOE:
+		if(Level == PIN_HIGH){ SET_BIT(pGPIOE->GPIO_ODR,Pin);}
+		else{CLR_BIT(pGPIOE->GPIO_ODR,Pin);}
+		break;
+		/* ------------------------- */
+		/* ----- PORTH ------------ */
+	case GPIOH:
+		if(Level == PIN_HIGH){SET_BIT(pGPIOH->GPIO_ODR,Pin);}
+		else{CLR_BIT(pGPIOH->GPIO_ODR,Pin);}
+		break;
+	}
+}
+
+/******************************************************************************
+ * \Syntax          : Std_ReturnType FunctionName(AnyType parameterName)
+ * \Description     : Describe this service
+ *
+ * \Sync\Async      : Synchronous
+ * \Reentrancy      : Non Reentrant
+ * \Parameters (in) : parameterName   Parameter Describtion
+ * \Parameters (out): None
+ * \Return value:   : Std_ReturnType  E_OK
+ *                                    E_NOT_OK
+ *******************************************************************************/
+void MGPIO_vTogglePin(GPIO_PINs_t Pin , GPIO_PORTs_t Port)
+{
+	switch(Port)
+	{
+	/* ------------------------- */
+	/* ----- PORTA ------------ */
+	case GPIOA:
+		TOG_BIT(pGPIOA->GPIO_ODR,Pin);
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTB ------------ */
+	case GPIOB:
+		TOG_BIT(pGPIOB->GPIO_ODR,Pin);
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTC ------------ */
+	case GPIOC:
+		TOG_BIT(pGPIOC->GPIO_ODR,Pin);
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTD ------------ */
+	case GPIOD:
+		TOG_BIT(pGPIOD->GPIO_ODR,Pin);
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTE ------------ */
+	case GPIOE:
+		TOG_BIT(pGPIOE->GPIO_ODR,Pin);
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTH ------------ */
+	case GPIOH:
+		TOG_BIT(pGPIOH->GPIO_ODR,Pin);
+		break;
+
+	}
 
 }
 
@@ -169,28 +283,55 @@ void MGPIO_vWritePin(GPIO_PORTs_t Port ,GPIO_PINs_t Pin,GPIO_PIN_STATUS_t Level)
  * \Return value:   : Std_ReturnType  E_OK
  *                                    E_NOT_OK
  *******************************************************************************/
-void MGPIO_vTogglePin(GPIO_PORTs_t Port,GPIO_PINs_t Pin)
+GPIO_PIN_STATUS_t  MGPIO_PIN_STATUS_ReadPin(GPIO_PINs_t Pin, GPIO_PORTs_t Port)
 {
 
+	GPIO_PIN_STATUS_t Level;
+	switch(Port)
+	{
+	/* ------------------------- */
+	/* ----- PORTA ------------ */
+	case GPIOA:
+		Level = GET_BIT(pGPIOA->GPIO_IDR,Pin);
+		break;
 
+		/* ------------------------- */
+		/* ----- PORTB ------------ */
+	case GPIOB:
+		Level = GET_BIT(pGPIOB->GPIO_IDR,Pin);
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTC ------------ */
+	case GPIOC:
+		Level = GET_BIT(pGPIOC->GPIO_IDR,Pin);
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTD ------------ */
+	case GPIOD:
+		Level = GET_BIT(pGPIOD->GPIO_IDR,Pin);
+		break;
+
+		/* ------------------------- */
+		/* ----- PORTE ------------ */
+	case GPIOE:
+		Level = GET_BIT(pGPIOE->GPIO_IDR,Pin);
+		break;
+
+
+		/* ------------------------- */
+		/* ----- PORTH ------------ */
+	case GPIOH:
+		Level = GET_BIT(pGPIOH->GPIO_IDR,Pin);
+		break;
+
+
+	}
+
+	return Level;
 }
 
-/******************************************************************************
- * \Syntax          : Std_ReturnType FunctionName(AnyType parameterName)
- * \Description     : Describe this service
- *
- * \Sync\Async      : Synchronous
- * \Reentrancy      : Non Reentrant
- * \Parameters (in) : parameterName   Parameter Describtion
- * \Parameters (out): None
- * \Return value:   : Std_ReturnType  E_OK
- *                                    E_NOT_OK
- *******************************************************************************/
-GPIO_PINs_t  MGPIO_vReadPin(GPIO_PORTs_t Port,GPIO_PINs_t Pin)
-{
-
-	return 0;
-}
 
 /**********************************************************************************************************************
  *  END OF FILE: GPIO_Program.c

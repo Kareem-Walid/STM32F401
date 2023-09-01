@@ -1,26 +1,55 @@
+/**********************************************************************************************************************
+ *  FILE INFORMATION
+ *  -----------------------------------------------------------------------------------------------------------------
+ *        FILE NAME :  GPIO_Interface.h
+ *        FILE DATE :  8/8/2023
+ *        VERSION:   V1.0
+ *        AUTHOR:   KAREEM WALID
+ *        BRIEF EXPLANATION:
+
+ *
+ *********************************************************************************************************************/
+
+ /* FILE GUARD */
 #ifndef    GPIO_INTERFACE_H_
 #define    GPIO_INTERFACE_H_
 
+
+/**********************************************************************************************************************
+ * INCLUDES
+ *********************************************************************************************************************/
 #include "../COMM/Bit_Math.h"
 #include "../COMM/Platform_Types.h"
+#include "../RCC_Driver/RCC_Interface.h"
 #include "GPIO_Private.h"
 
 
+/**********************************************************************************************************************
+ *  GLOBAL ENUMs
+ *********************************************************************************************************************/
+
+/* -------------------------------------------- */
+/* GPIO Ports for STM32F401xx */
 typedef enum{
-	GPIO_PA,
-	GPIO_PB,
-	GPIO_PC,
-	GPIO_PD,
-	GPIO_PE,
-	GPIO_PH
+	GPIOA,
+	GPIOB,
+	GPIOC,
+	GPIOD,
+	GPIOE,
+	GPIOH
 
 }GPIO_PORTs_t;
 
+/* ------------------------------------------------ */
+/*Pin Status */
 typedef enum{
 	PIN_LOW,
 	PIN_HIGH
-}PinLevel_t;
+}GPIO_PIN_STATUS_t;
 
+
+/* ------------------------------------------------ */
+/* GPIO PINS */
 typedef enum {
 	PIN0,
 	PIN1,
@@ -38,9 +67,10 @@ typedef enum {
 	PIN13,
 	PIN14,
 	PIN15
-}PINs_t;
+}GPIO_PINs_t;
 
-
+/* ------------------------------------------------------------ */
+/* PIN MODE */
 typedef  enum{
 	INPUT_M,
 	OUTPUT_M,
@@ -48,14 +78,16 @@ typedef  enum{
 	ANALOG_M,
 }PinMode_t;
 
-
+/* ------------------------------------------------------------ */
+/* PIN OUTPUT MODE */
 typedef enum 
 {
 	PUSH_PULL,
 	OPEN_DRAIN
 }PinOutType_t;
 
-
+/* ------------------------------------------------------------ */
+/* PIN OUTPUT SPEED */
 typedef enum {
 	Low_Speed,
     Medium_Speed,
@@ -63,7 +95,8 @@ typedef enum {
     Very_High_Speed
 }PinOutSpeed_t;
 
-
+/* ------------------------------------------------------------ */
+/*PIN INPUT MODE */
 typedef enum {
 	No_pull_up_Down,
     Pull_up,
@@ -71,7 +104,8 @@ typedef enum {
     Reserved
 }PinInputType_t;
 
-
+/* ------------------------------------------------------------ */
+/* Pin AF Modes */
 typedef enum{
 	AF00,
 	AF01,
@@ -90,13 +124,15 @@ typedef enum{
 	AF14,
 	AF15
 }Alternative_Types_t;
+/* ------------------------------------------------------------ */
 
+/**********************************************************************************************************************
+ *  GLOBAL STRUCTURES
+ *********************************************************************************************************************/
+/* This Struct Contain All Configuration For Any Pin */
 typedef  struct
 {
-	PINs_t  Pin;
-	GPIO_PORTs_t Port;
 	PinMode_t  PinMode;
-	PinLevel_t  Level;
 	PinOutType_t PinOutType;
 	PinOutSpeed_t  PinOutSpeed;
 	PinInputType_t PinInputType;
@@ -104,7 +140,63 @@ typedef  struct
 	
 }SPinConfig_t;
 
-void GPIO_PinConfig(SPinConfig_t *SPinConfigPoin);
+
+/**********************************************************************************************************************
+ *  GLOBAL FUNCTION PROTOTYPES
+ *********************************************************************************************************************/
+/******************************************************************************
+* \Syntax          : void MGPIO_vPinInit(GPIO_PINs_t Pin , GPIO_PORTs_t Port , SPinConfig_t *pSPinConfig);
+* \Description     : This Function Init GPIO Hardware By Enable RCC Then Enable GPIO that connected on AHB1 Bus
+*                    then Init Pin Selected from Pin Configuration Structure
+*
+* \Sync\Async      : Synchronous
+* \Reentrancy      : Non Reentrant
+* \Parameters (in) :  Pin, Port , Structure of Pin Configuration
+* \Parameters (out): None
+* \Return value:   : None
+*******************************************************************************/
+void MGPIO_vPinInit(GPIO_PINs_t Pin , GPIO_PORTs_t Port , SPinConfig_t *pSPinConfig);
+
+
+/******************************************************************************
+* \Syntax          :void MGPIO_vWritePin(GPIO_PINs_t Pin,GPIO_PORTs_t Port,GPIO_PIN_STATUS_t Level)
+* \Description     :This Function Used when we want to write on any pin high or low
+*                     by sending the pin port value
+*
+* \Sync\Async      : Synchronous
+* \Reentrancy      : Non Reentrant
+* \Parameters (in) :  Pin, Port , Output Selected on the pin
+* \Parameters (out): None
+* \Return value:   :None
+*******************************************************************************/
+void MGPIO_vWritePin(GPIO_PINs_t Pin,GPIO_PORTs_t Port,GPIO_PIN_STATUS_t Level);
+/******************************************************************************
+* \Syntax          : void MGPIO_vTogglePin(GPIO_PINs_t Pin , GPIO_PORTs_t Port)
+* \Description     : This Function is very simple it can toggle any Pin for high to low and low to high
+*
+* \Sync\Async      : Synchronous
+* \Reentrancy      : Non Reentrant
+* \Parameters (in) :  Pin, Port
+* \Parameters (out): None
+* \Return value:   : None
+*******************************************************************************/
+void MGPIO_vTogglePin(GPIO_PINs_t Pin , GPIO_PORTs_t Port);
+/******************************************************************************
+* \Syntax          : Std_ReturnType FunctionName(AnyType parameterName)
+* \Description     : Describe this service
+*
+* \Sync\Async      : Synchronous
+* \Reentrancy      : Non Reentrant
+* \Parameters (in) : Pin ,Port
+* \Parameters (out): GPIO_PIN_STATUS_t (High or LOW )
+* \Return value:   : None
+*******************************************************************************/
+GPIO_PIN_STATUS_t  MGPIO_PIN_STATUS_ReadPin(GPIO_PINs_t Pin,GPIO_PORTs_t Port);
 
 
 #endif   /* GPIO_INTERFACE_H_ */
+
+
+/**********************************************************************************************************************
+ *  END OF FILE: GPIO_Interface.h
+ *********************************************************************************************************************/

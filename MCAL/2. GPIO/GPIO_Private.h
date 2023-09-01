@@ -1,12 +1,27 @@
+/**********************************************************************************************************************
+ *  FILE INFORMATION
+ *  -----------------------------------------------------------------------------------------------------------------
+ *        FILE NAME : GPIO_Private.h
+ *        FILE DATE : 8/8/2023
+ *        VERSION:   V2.0
+ *        AUTHOR:   KAREEM WALID
+ *        BRIEF EXPLANATION: This File Contain all Private Hardware
+ *
+ *
+ *********************************************************************************************************************/
+
+ /* FILE GUARD */
 #ifndef    GPIO_PRIVATE_H_
 #define    GPIO_PRIVATE_H_
 
 
 
 
+/**********************************************************************************************************************
+ *  GLOBAL CONSTANT MACROS
+ *********************************************************************************************************************/
 
-
-
+  /* GPTO Base Addresses for STM32F401xx */
 #define     GPIOA_BASE_ADDRESS    0x40020000UL    
 #define     GPIOB_BASE_ADDRESS    0x40020400UL  
 #define     GPIOC_BASE_ADDRESS    0x40020800UL
@@ -15,16 +30,22 @@
 #define     GPIOH_BASE_ADDRESS    0x40021C00UL
 
 
+/* Pointers for each GPIO Registers */
+/* This Pointers used to access any register for any GPIO  */
+/* This Addresses Dependent on Microcontroller */
+#define  pGPIOA    ((GPIO_REGs_t*)GPIOA_BASE_ADDRESS)
+#define  pGPIOB    ((GPIO_REGs_t*)GPIOB_BASE_ADDRESS)
+#define  pGPIOC    ((GPIO_REGs_t*)GPIOC_BASE_ADDRESS)
+#define  pGPIOD    ((GPIO_REGs_t*)GPIOD_BASE_ADDRESS)
+#define  pGPIOE    ((GPIO_REGs_t*)GPIOE_BASE_ADDRESS)
+#define  pGPIOH    ((GPIO_REGs_t*)GPIOH_BASE_ADDRESS)
 
-#define  GPIOA    ((GPIO_REGs_t*)GPIOA_BASE_ADDRESS)
-#define  GPIOB    ((GPIO_REGs_t*)GPIOB_BASE_ADDRESS)
-#define  GPIOC    ((GPIO_REGs_t*)GPIOC_BASE_ADDRESS)
-#define  GPIOD    ((GPIO_REGs_t*)GPIOD_BASE_ADDRESS)
-#define  GPIOE    ((GPIO_REGs_t*)GPIOE_BASE_ADDRESS)
-#define  GPIOH    ((GPIO_REGs_t*)GPIOH_BASE_ADDRESS)
 
 
-
+/**********************************************************************************************************************
+ *  GLOBAL STRUCTURES
+ *********************************************************************************************************************/
+/* This Structure Contains All Registers for GPIO Peripheral  */
 typedef  struct
 {
 	volatile uint32_t    GPIO_MODER;     /* 1- OFFSET = 0x00 GPIO Port Mode Reg                */
@@ -44,3 +65,6 @@ typedef  struct
 
 #endif   /* GPIO_PRIVATE_H_ */
 
+/**********************************************************************************************************************
+ *  END OF FILE: GPIO_Private.h
+ *********************************************************************************************************************/
