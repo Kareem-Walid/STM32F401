@@ -5,7 +5,7 @@
  *      Author: Kareem Walid
  */
 
-#include "SysTick_Interface.h"
+#include "../SysTick_Driver/SysTick_Interface.h"
 
 static volatile ptrFunction  SysTick_CallBack = NULL;
 static uint8_t SysTick_Mode = SysTick_Single_Interval_Mode;
@@ -66,7 +66,7 @@ void STK_vDelay_(uint32_t Delay)
 	SysTick->STK_LOAD = 0;
 
 	/* Reset The SysTick Counter Value*/
-	SysTick->STK_VAL = 0;
+	SysTick-> STK_VAL = 0;
 }
 
 void STK_SingleInterval(uint32_t Ticks , ptrFunction *CallBack)
@@ -102,7 +102,7 @@ void STK_PeruidicInterval(uint32_t Ticks , ptrFunction *CallBack)
 		/* Set Reload Register to SysTick */
 		SysTick->STK_LOAD = Ticks;
 
-		/*Copy of user Callback yo a local ptrFunction*/
+		/*Copy of user Callback a local ptrFunction*/
 		SysTick_CallBack = CallBack;
 
 		/*Set SysTick Timer to the Single Interval Mode */
@@ -124,13 +124,13 @@ void SysTick_Handler(void)
 {
 	if(SysTick_Mode == SysTick_Single_Interval_Mode)
 	{
-		/* Disable SysTick Conunter */
-		CLR_BIT(SysTick-> STK_CTRL,0);   // bit 0 ENABLE  ERROR: Cant be Solved
+		/* Disable SysTick Counter */
+		CLR_BIT(SysTick-> STK_CTRL,0);   // bit 0 ENABLE  ERROR: Can't be Solved
 
 		/* Reset Reload Register to SysTicks */
 		SysTick->STK_LOAD = 0;
 
-		/* Reset the SysTick Conter value */
+		/* Reset the SysTick Counter value */
 		SysTick->STK_VAL = 0;
 
 		/* Disable SysTickIRQ */

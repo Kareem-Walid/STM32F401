@@ -52,6 +52,8 @@ void MGPIO_vPinInit(GPIO_PINs_t Pin , GPIO_PORTs_t Port , SPinConfig_t *pSPinCon
 	/*Switch on Ports GPIOA , GPIOB , GPIOC , GPIOD , GPIOE or GPIOH */
 	switch(Port)
 	{
+	    /* --------------------------------------------------------------------- */
+		/* ------------------- GPIOA Port ---------------------------------------*/
 	case GPIOA:
 		/* Before Load Any Data We must to Enable Clock For Port  */
 		/* Enable Clock For Port A that be connected on AHB1 Bus */
@@ -78,7 +80,7 @@ void MGPIO_vPinInit(GPIO_PINs_t Pin , GPIO_PORTs_t Port , SPinConfig_t *pSPinCon
 		CLR_BIT(pGPIOA -> GPIO_OTYPER,Pin);
 		if(pSPinConfig ->PinOutType == OPEN_DRAIN)
 		{
-			set_BIT(pGPIOA -> GPIO_OTYPER,Pin);
+			SET_BIT(pGPIOA -> GPIO_OTYPER,Pin);
 		}
 
 		/* ----------------------------------------------------- */
@@ -132,7 +134,414 @@ void MGPIO_vPinInit(GPIO_PINs_t Pin , GPIO_PORTs_t Port , SPinConfig_t *pSPinCon
 		}
 		break;
 		
+	    /* --------------------------------------------------------------------- */
+		/* ------------------- GPIOB Port ---------------------------------------*/
+	case GPIOB:
+			/* Before Load Any Data We must to Enable Clock For Port  */
+			/* Enable Clock For Port A that be connected on AHB1 Bus */
+			RCC_vEnablePeripheral(AHB1,GPIOBEN);
+			/* -------------- SET MODE ------------------- */
+			/* MODE Options:
+			 * 00: Input (reset state)
+			 * 01: General purpose output mode
+			 * 10: Alternate function mode
+			 * 11: Analog mode
+			 */
 
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOB -> GPIO_MODER   &=~ (0b11<<(Pin*2));
+			/* SET TWO PINS SPECIFIC WITH MODE */
+			pGPIOB -> GPIO_MODER   |=  (((pSPinConfig->PinMode)<<(Pin*2)));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN OUTPUT TYPE ------------------- */
+			/* OUTPUT TYPE Options:
+			 * 0: Output push-pull (reset state)
+			 * 1: Output open-drain
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			CLR_BIT(pGPIOB -> GPIO_OTYPER,Pin);
+			if(pSPinConfig ->PinOutType == OPEN_DRAIN)
+			{
+				SET_BIT(pGPIOB -> GPIO_OTYPER,Pin);
+			}
+
+			/* ----------------------------------------------------- */
+			/* -------------- SET OUTPUT SPEED --------------------- */
+			/* SPEED Options:
+			 * 00: Low speed
+			 * 01: Medium speed
+			 * 10: High speed
+			 * 11: Very high speed
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOB -> GPIO_OSPEEDER  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOB -> GPIO_OSPEEDER  |=  (((pSPinConfig->PinOutSpeed)<<(Pin)*2));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN INPUT TYPE ------------------- */
+			/* INPUT TYPE Options:
+			 * 00: No pull-up, pull-down
+			 * 01: Pull-up
+			 * 10: Pull-down
+			 * 11: Reserved
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOB -> GPIO_PUPDR  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOB -> GPIO_PUPDR  |=  (((pSPinConfig->PinInputType)<<(Pin)*2));
+
+			/* ------------------------------------------------------ */
+			/*-----------  Alternative Function Section ------------- */
+
+
+			/* Check on The Pin to  choosing register High or Low*/
+			/* If The Function Between Pin0 and Pin7 */
+			if(Pin >= PIN0 && Pin <= PIN7)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOB -> GPIO_AFRL   &=~ (0b1111<<((Pin)*4));
+	            /* Store 4 bits in The Reg AFRL */
+			    pGPIOB -> GPIO_AFRL   |=  (((pSPinConfig -> ALT_FUN)<<(Pin)*4));
+
+	                  /* If The Function Between Pin8 and Pin15 */
+			}else if (Pin >= PIN7 && Pin <= PIN15)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOB -> GPIO_AFRH   &=~ (0b1111<<((Pin % 8)*4));
+	            /* Store 4 bits in The Register AFRH */
+			    pGPIOB -> GPIO_AFRH   |=  (((pSPinConfig -> ALT_FUN)<<(Pin % 8)*4));
+			}
+			break;
+			 /* --------------------------------------------------------------------- */
+			/* ------------------- GPIOC Port ---------------------------------------*/
+
+	case GPIOC:
+			/* Before Load Any Data We must to Enable Clock For Port  */
+			/* Enable Clock For Port A that be connected on AHB1 Bus */
+			RCC_vEnablePeripheral(AHB1,GPIOCEN);
+			/* -------------- SET MODE ------------------- */
+			/* MODE Options:
+			 * 00: Input (reset state)
+			 * 01: General purpose output mode
+			 * 10: Alternate function mode
+			 * 11: Analog mode
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOC -> GPIO_MODER   &=~ (0b11<<(Pin*2));
+			/* SET TWO PINS SPECIFIC WITH MODE */
+			pGPIOC -> GPIO_MODER   |=  (((pSPinConfig->PinMode)<<(Pin*2)));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN OUTPUT TYPE ------------------- */
+			/* OUTPUT TYPE Options:
+			 * 0: Output push-pull (reset state)
+			 * 1: Output open-drain
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			CLR_BIT(pGPIOC -> GPIO_OTYPER,Pin);
+			if(pSPinConfig ->PinOutType == OPEN_DRAIN)
+			{
+				SET_BIT(pGPIOC -> GPIO_OTYPER,Pin);
+			}
+
+			/* ----------------------------------------------------- */
+			/* -------------- SET OUTPUT SPEED --------------------- */
+			/* SPEED Options:
+			 * 00: Low speed
+			 * 01: Medium speed
+			 * 10: High speed
+			 * 11: Very high speed
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOC -> GPIO_OSPEEDER  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOC -> GPIO_OSPEEDER  |=  (((pSPinConfig->PinOutSpeed)<<(Pin)*2));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN INPUT TYPE ------------------- */
+			/* INPUT TYPE Options:
+			 * 00: No pull-up, pull-down
+			 * 01: Pull-up
+			 * 10: Pull-down
+			 * 11: Reserved
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOC -> GPIO_PUPDR  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOC -> GPIO_PUPDR  |=  (((pSPinConfig->PinInputType)<<(Pin)*2));
+
+			/* ------------------------------------------------------ */
+			/*-----------  Alternative Function Section ------------- */
+
+
+			/* Check on The Pin to  choosing register High or Low*/
+			/* If The Function Between Pin0 and Pin7 */
+			if(Pin >= PIN0 && Pin <= PIN7)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOC -> GPIO_AFRL   &=~ (0b1111<<((Pin)*4));
+	            /* Store 4 bits in The Reg AFRL */
+			    pGPIOC -> GPIO_AFRL   |=  (((pSPinConfig -> ALT_FUN)<<(Pin)*4));
+
+	                  /* If The Function Between Pin8 and Pin15 */
+			}else if (Pin >= PIN7 && Pin <= PIN15)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOC -> GPIO_AFRH   &=~ (0b1111<<((Pin % 8)*4));
+	            /* Store 4 bits in The Register AFRH */
+			    pGPIOC -> GPIO_AFRH   |=  (((pSPinConfig -> ALT_FUN)<<(Pin % 8)*4));
+			}
+			break;
+			 /* --------------------------------------------------------------------- */
+			 /* ------------------- GPIOD Port ---------------------------------------*/
+	case GPIOD:
+			/* Before Load Any Data We must to Enable Clock For Port  */
+			/* Enable Clock For Port A that be connected on AHB1 Bus */
+			RCC_vEnablePeripheral(AHB1,GPIODEN);
+			/* -------------- SET MODE ------------------- */
+			/* MODE Options:
+			 * 00: Input (reset state)
+			 * 01: General purpose output mode
+			 * 10: Alternate function mode
+			 * 11: Analog mode
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOD -> GPIO_MODER   &=~ (0b11<<(Pin*2));
+			/* SET TWO PINS SPECIFIC WITH MODE */
+			pGPIOD -> GPIO_MODER   |=  (((pSPinConfig->PinMode)<<(Pin*2)));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN OUTPUT TYPE ------------------- */
+			/* OUTPUT TYPE Options:
+			 * 0: Output push-pull (reset state)
+			 * 1: Output open-drain
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			CLR_BIT(pGPIOD -> GPIO_OTYPER,Pin);
+			if(pSPinConfig ->PinOutType == OPEN_DRAIN)
+			{
+				SET_BIT(pGPIOD -> GPIO_OTYPER,Pin);
+			}
+
+			/* ----------------------------------------------------- */
+			/* -------------- SET OUTPUT SPEED --------------------- */
+			/* SPEED Options:
+			 * 00: Low speed
+			 * 01: Medium speed
+			 * 10: High speed
+			 * 11: Very high speed
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOD -> GPIO_OSPEEDER  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOD -> GPIO_OSPEEDER  |=  (((pSPinConfig->PinOutSpeed)<<(Pin)*2));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN INPUT TYPE ------------------- */
+			/* INPUT TYPE Options:
+			 * 00: No pull-up, pull-down
+			 * 01: Pull-up
+			 * 10: Pull-down
+			 * 11: Reserved
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOD -> GPIO_PUPDR  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOD -> GPIO_PUPDR  |=  (((pSPinConfig->PinInputType)<<(Pin)*2));
+
+			/* ------------------------------------------------------ */
+			/*-----------  Alternative Function Section ------------- */
+
+
+			/* Check on The Pin to  choosing register High or Low*/
+			/* If The Function Between Pin0 and Pin7 */
+			if(Pin >= PIN0 && Pin <= PIN7)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOD -> GPIO_AFRL   &=~ (0b1111<<((Pin)*4));
+	            /* Store 4 bits in The Reg AFRL */
+			    pGPIOD -> GPIO_AFRL   |=  (((pSPinConfig -> ALT_FUN)<<(Pin)*4));
+
+	                  /* If The Function Between Pin8 and Pin15 */
+			}else if (Pin >= PIN7 && Pin <= PIN15)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOD -> GPIO_AFRH   &=~ (0b1111<<((Pin % 8)*4));
+	            /* Store 4 bits in The Register AFRH */
+			    pGPIOD -> GPIO_AFRH   |=  (((pSPinConfig -> ALT_FUN)<<(Pin % 8)*4));
+			}
+			break;
+			 /* --------------------------------------------------------------------- */
+			 /* ------------------- GPIOE Port ---------------------------------------*/
+	case GPIOE:
+			/* Before Load Any Data We must to Enable Clock For Port  */
+			/* Enable Clock For Port A that be connected on AHB1 Bus */
+			RCC_vEnablePeripheral(AHB1,GPIOEEN);
+			/* -------------- SET MODE ------------------- */
+			/* MODE Options:
+			 * 00: Input (reset state)
+			 * 01: General purpose output mode
+			 * 10: Alternate function mode
+			 * 11: Analog mode
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOE -> GPIO_MODER   &=~ (0b11<<(Pin*2));
+			/* SET TWO PINS SPECIFIC WITH MODE */
+			pGPIOE -> GPIO_MODER   |=  (((pSPinConfig->PinMode)<<(Pin*2)));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN OUTPUT TYPE ------------------- */
+			/* OUTPUT TYPE Options:
+			 * 0: Output push-pull (reset state)
+			 * 1: Output open-drain
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			CLR_BIT(pGPIOE -> GPIO_OTYPER,Pin);
+			if(pSPinConfig ->PinOutType == OPEN_DRAIN)
+			{
+				SET_BIT(pGPIOE -> GPIO_OTYPER,Pin);
+			}
+
+			/* ----------------------------------------------------- */
+			/* -------------- SET OUTPUT SPEED --------------------- */
+			/* SPEED Options:
+			 * 00: Low speed
+			 * 01: Medium speed
+			 * 10: High speed
+			 * 11: Very high speed
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOE -> GPIO_OSPEEDER  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOE -> GPIO_OSPEEDER  |=  (((pSPinConfig->PinOutSpeed)<<(Pin)*2));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN INPUT TYPE ------------------- */
+			/* INPUT TYPE Options:
+			 * 00: No pull-up, pull-down
+			 * 01: Pull-up
+			 * 10: Pull-down
+			 * 11: Reserved
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOE -> GPIO_PUPDR  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOE -> GPIO_PUPDR  |=  (((pSPinConfig->PinInputType)<<(Pin)*2));
+
+			/* ------------------------------------------------------ */
+			/*-----------  Alternative Function Section ------------- */
+
+
+			/* Check on The Pin to  choosing register High or Low*/
+			/* If The Function Between Pin0 and Pin7 */
+			if(Pin >= PIN0 && Pin <= PIN7)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOE -> GPIO_AFRL   &=~ (0b1111<<((Pin)*4));
+	            /* Store 4 bits in The Reg AFRL */
+			    pGPIOE -> GPIO_AFRL   |=  (((pSPinConfig -> ALT_FUN)<<(Pin)*4));
+
+	                  /* If The Function Between Pin8 and Pin15 */
+			}else if (Pin >= PIN7 && Pin <= PIN15)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOE -> GPIO_AFRH   &=~ (0b1111<<((Pin % 8)*4));
+	            /* Store 4 bits in The Register AFRH */
+			    pGPIOE -> GPIO_AFRH   |=  (((pSPinConfig -> ALT_FUN)<<(Pin % 8)*4));
+			}
+			break;
+			 /* --------------------------------------------------------------------- */
+			 /* ------------------- GPIOH Port ---------------------------------------*/
+	case GPIOH:
+			/* Before Load Any Data We must to Enable Clock For Port  */
+			/* Enable Clock For Port A that be connected on AHB1 Bus */
+			RCC_vEnablePeripheral(AHB1,GPIOHEN);
+			/* -------------- SET MODE ------------------- */
+			/* MODE Options:
+			 * 00: Input (reset state)
+			 * 01: General purpose output mode
+			 * 10: Alternate function mode
+			 * 11: Analog mode
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOH -> GPIO_MODER   &=~ (0b11<<(Pin*2));
+			/* SET TWO PINS SPECIFIC WITH MODE */
+			pGPIOH -> GPIO_MODER   |=  (((pSPinConfig->PinMode)<<(Pin*2)));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN OUTPUT TYPE ------------------- */
+			/* OUTPUT TYPE Options:
+			 * 0: Output push-pull (reset state)
+			 * 1: Output open-drain
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			CLR_BIT(pGPIOH -> GPIO_OTYPER,Pin);
+			if(pSPinConfig ->PinOutType == OPEN_DRAIN)
+			{
+				SET_BIT(pGPIOH -> GPIO_OTYPER,Pin);
+			}
+
+			/* ----------------------------------------------------- */
+			/* -------------- SET OUTPUT SPEED --------------------- */
+			/* SPEED Options:
+			 * 00: Low speed
+			 * 01: Medium speed
+			 * 10: High speed
+			 * 11: Very high speed
+			 */
+
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOH -> GPIO_OSPEEDER  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOH -> GPIO_OSPEEDER  |=  (((pSPinConfig->PinOutSpeed)<<(Pin)*2));
+			/* ----------------------------------------------------- */
+			/* -------------- SET PIN INPUT TYPE ------------------- */
+			/* INPUT TYPE Options:
+			 * 00: No pull-up, pull-down
+			 * 01: Pull-up
+			 * 10: Pull-down
+			 * 11: Reserved
+			 */
+			/* CLEAR TWO PINS SPECIFIC  */
+			pGPIOH -> GPIO_PUPDR  &=~ (0b11<<((Pin)*2));
+			/* SET TWO PINS SPECIFIC WITH SPEED */
+			pGPIOH -> GPIO_PUPDR  |=  (((pSPinConfig->PinInputType)<<(Pin)*2));
+
+			/* ------------------------------------------------------ */
+			/*-----------  Alternative Function Section ------------- */
+
+
+			/* Check on The Pin to  choosing register High or Low*/
+			/* If The Function Between Pin0 and Pin7 */
+			if(Pin >= PIN0 && Pin <= PIN7)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOH -> GPIO_AFRL   &=~ (0b1111<<((Pin)*4));
+	            /* Store 4 bits in The Reg AFRL */
+			    pGPIOH -> GPIO_AFRL   |=  (((pSPinConfig -> ALT_FUN)<<(Pin)*4));
+
+	                  /* If The Function Between Pin8 and Pin15 */
+			}else if (Pin >= PIN7 && Pin <= PIN15)
+			{
+				/* -- Save Value of AF in GPIOA_AFRL -- */
+				/* Restore bits wanted to 0000 with kepting other bits without any changes */
+				pGPIOH -> GPIO_AFRH   &=~ (0b1111<<((Pin % 8)*4));
+	            /* Store 4 bits in The Register AFRH */
+			    pGPIOH -> GPIO_AFRH   |=  (((pSPinConfig -> ALT_FUN)<<(Pin % 8)*4));
+			}
+			break;
+
+			 /* --------------------------------------------------------------------- */
 
 	}
 

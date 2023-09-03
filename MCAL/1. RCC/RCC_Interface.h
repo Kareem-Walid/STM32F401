@@ -12,8 +12,8 @@
 #define   RCC_INTERFACE_H_
 
 #include "../COMM/BIT_MATH.h"
-#include "RCC_Private.h"
-#include "RCC_Config.h"
+#include "../RCC_Driver/RCC_Config.h"
+#include "../RCC_Driver/RCC_Private.h"
 
 
 

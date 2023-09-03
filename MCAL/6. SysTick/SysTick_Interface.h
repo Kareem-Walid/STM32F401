@@ -12,8 +12,8 @@
 
 #include "../COMM/Platform_Types.h"
 #include "../COMM/Bit_Math.h"
-#include "SysTick_Private.h"
-#include "SysTick_Config.h"
+#include "../SysTick_Driver/SysTick_Config.h"
+#include "../SysTick_Driver/SysTick_Private.h"
 
 
 

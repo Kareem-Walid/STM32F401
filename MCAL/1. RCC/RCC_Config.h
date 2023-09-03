@@ -4,7 +4,7 @@
 #ifndef  RCC_CONFIG_H_
 #define  RCC_CONFIG_H_
 
-#include "RCC_Private.h"
+#include "../RCC_Driver/RCC_Private.h"
 
 #define   HSI   0
 #define   HSE   1
