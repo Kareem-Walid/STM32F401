@@ -233,6 +233,7 @@ Status_Types_t MFLASH_StatusTypes_EraseSector(uint8_t Sector_Number )
 
 
 	/*----------- Assembly ----------------*/
+	/* this critical section */
 	/*Enable Interrupt */
 	__asm volatile("CPSIE i":::"memory");
 	/*-------------------------------------*/
